@@ -23,10 +23,10 @@ public class AdminDAO extends DBContext {
      */
     public List<Admin> getAllAdmins() {
         List<Admin> admins = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM Admin";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+        String sql = "SELECT * FROM Admin";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Admin admin = new Admin(
                         rs.getInt("AdminID"),
@@ -38,6 +38,8 @@ public class AdminDAO extends DBContext {
             }
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return admins;
     }
@@ -48,25 +50,27 @@ public class AdminDAO extends DBContext {
      * @return Admin object
      */
     public Admin getAdminByID(int id) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        Admin admin = null;
+        String sql = "SELECT * FROM Admin WHERE AdminID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    admin = new Admin(
+                            rs.getInt("AdminID"),
+                            rs.getString("Name"),
+                            rs.getString("Email"),
+                            rs.getString("Password")
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return admin;
     }
 
     /**
@@ -75,25 +79,27 @@ public class AdminDAO extends DBContext {
      * @return Admin object
      */
     public Admin getAdminByEmail(String email) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Email=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        Admin admin = null;
+        String sql = "SELECT * FROM Admin WHERE Email=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    admin = new Admin(
+                            rs.getInt("AdminID"),
+                            rs.getString("Name"),
+                            rs.getString("Email"),
+                            rs.getString("Password")
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return admin;
     }
 
     /**
@@ -102,25 +108,27 @@ public class AdminDAO extends DBContext {
      * @return Admin object
      */
     public Admin getAdminByName(String name) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Name=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        Admin admin = null;
+        String sql = "SELECT * FROM Admin WHERE Name=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    admin = new Admin(
+                            rs.getInt("AdminID"),
+                            rs.getString("Name"),
+                            rs.getString("Email"),
+                            rs.getString("Password")
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return admin;
     }
 
     /**
@@ -129,25 +137,27 @@ public class AdminDAO extends DBContext {
      * @return Admin object
      */
     public Admin getAdminByPassword(String password) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Password=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        Admin admin = null;
+        String sql = "SELECT * FROM Admin WHERE Password=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, password);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    admin = new Admin(
+                            rs.getInt("AdminID"),
+                            rs.getString("Name"),
+                            rs.getString("Email"),
+                            rs.getString("Password")
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return admin;
     }
 
     /**
@@ -156,9 +166,9 @@ public class AdminDAO extends DBContext {
      * @return true if update was successful, false otherwise
      */
     public boolean updateAdmin(Admin admin) {
-        try {
-            String sql = "UPDATE Admin SET Name=?, Email=?, Password=? WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "UPDATE Admin SET Name=?, Email=?, Password=? WHERE AdminID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, admin.getName());
             ps.setString(2, admin.getEmail());
             ps.setString(3, admin.getPassword());
@@ -166,6 +176,8 @@ public class AdminDAO extends DBContext {
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
@@ -177,13 +189,15 @@ public class AdminDAO extends DBContext {
      * @return true if deletion was successful, false otherwise
      */
     public boolean deleteAdmin(int id) {
-        try {
-            String sql = "DELETE FROM Admin WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "DELETE FROM Admin WHERE AdminID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;

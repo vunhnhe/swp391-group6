@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
 import java.util.ArrayList;
@@ -12,17 +8,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author tovie
+ * Data Access Object for Customer
+ * Handles database operations related to Customer
  */
 public class CustomerDAO extends DBContext {
 
-    public List<Customer> getAllCustomers() {
-        try {
-            List<Customer> customers = new ArrayList<>();
-            String sql = "select * from customer";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+    /**
+     * Retrieves all customers from the database
+     * @return List of Customer objects
+     */
+    public List<Customer> getAllCustomers() throws Exception {
+        List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM Customer";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Customer customer = new Customer(
                         rs.getInt("CustomerID"),
@@ -34,113 +34,137 @@ public class CustomerDAO extends DBContext {
                 );
                 customers.add(customer);
             }
-            return customers;
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return customers;
     }
 
-    public Customer getCustomerByID(int id) {
-        try {
-            Customer customer = null;
-            String sql = "select * from customer where CustomerID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Retrieves a customer by ID
+     * @param id Customer ID
+     * @return Customer object
+     */
+    public Customer getCustomerByID(int id) throws Exception {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE CustomerID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                customer = new Customer(
-                        rs.getInt("CustomerID"),
-                        rs.getString("Phone"),
-                        rs.getString("CustomerName"),
-                        rs.getString("Password"),
-                        rs.getString("Email"),
-                        rs.getString("Address")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("Phone"),
+                            rs.getString("CustomerName"),
+                            rs.getString("Password"),
+                            rs.getString("Email"),
+                            rs.getString("Address")
+                    );
+                }
             }
-            return customer;
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return customer;
     }
 
-    public Customer getCustomerByEmail(String email) {
-        try {
-            Customer customer = null;
-            String sql = "select * from customer where Email=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Retrieves a customer by email
+     * @param email Customer email
+     * @return Customer object
+     */
+    public Customer getCustomerByEmail(String email) throws Exception {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE Email=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                customer = new Customer(
-                        rs.getInt("CustomerID"),
-                        rs.getString("Phone"),
-                        rs.getString("CustomerName"),
-                        rs.getString("Password"),
-                        rs.getString("Email"),
-                        rs.getString("Address")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("Phone"),
+                            rs.getString("CustomerName"),
+                            rs.getString("Password"),
+                            rs.getString("Email"),
+                            rs.getString("Address")
+                    );
+                }
             }
-            return customer;
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return customer;
     }
 
-    public Customer getCustomerByName(String name) {
-        try {
-            Customer customer = null;
-            String sql = "select * from customer where CustomerName=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Retrieves a customer by name
+     * @param name Customer name
+     * @return Customer object
+     */
+    public Customer getCustomerByName(String name) throws Exception {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE CustomerName=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                customer = new Customer(
-                        rs.getInt("CustomerID"),
-                        rs.getString("Phone"),
-                        rs.getString("CustomerName"),
-                        rs.getString("Password"),
-                        rs.getString("Email"),
-                        rs.getString("Address")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("Phone"),
+                            rs.getString("CustomerName"),
+                            rs.getString("Password"),
+                            rs.getString("Email"),
+                            rs.getString("Address")
+                    );
+                }
             }
-            return customer;
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return customer;
     }
 
-    public Customer getCustomerByPassword(String password) {
-        try {
-            Customer customer = null;
-            String sql = "select * from customer where Password=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Retrieves a customer by password
+     * @param password Customer password
+     * @return Customer object
+     */
+    public Customer getCustomerByPassword(String password) throws Exception {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE Password=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, password);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                customer = new Customer(
-                        rs.getInt("CustomerID"),
-                        rs.getString("Phone"),
-                        rs.getString("CustomerName"),
-                        rs.getString("Password"),
-                        rs.getString("Email"),
-                        rs.getString("Address")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    customer = new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("Phone"),
+                            rs.getString("CustomerName"),
+                            rs.getString("Password"),
+                            rs.getString("Email"),
+                            rs.getString("Address")
+                    );
+                }
             }
-            return customer;
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return customer;
     }
 
-    public boolean updateCustomer(Customer customer) {
-        try {
-            String sql = "update customer set Phone=?, CustomerName=?, Password=?, Email=?, Address=? where CustomerID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Updates a customer in the database
+     * @param customer Customer object
+     * @return true if update was successful, false otherwise
+     */
+    public boolean updateCustomer(Customer customer) throws Exception {
+        String sql = "UPDATE Customer SET Phone=?, CustomerName=?, Password=?, Email=?, Address=? WHERE CustomerID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, customer.getPhone());
             ps.setString(2, customer.getName());
             ps.setString(3, customer.getPassword());
@@ -155,10 +179,15 @@ public class CustomerDAO extends DBContext {
         return false;
     }
 
-    public boolean deleteCustomer(int id) {
-        try {
-            String sql = "delete from customer where CustomerID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+    /**
+     * Deletes a customer from the database
+     * @param id Customer ID
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteCustomer(int id) throws Exception {
+        String sql = "DELETE FROM Customer WHERE CustomerID=?";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -170,6 +199,10 @@ public class CustomerDAO extends DBContext {
 
     public static void main(String[] args) {
         CustomerDAO dao = new CustomerDAO();
-        System.out.println(dao.getCustomerByID(2));
+        try {
+            System.out.println(dao.getCustomerByID(2));
+        } catch (Exception ex) {
+            Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
