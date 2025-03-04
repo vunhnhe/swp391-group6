@@ -13,6 +13,7 @@ import model.Admin;
 
 public class AdminDAO {
     private Connection connection;
+    private static final Logger LOGGER = Logger.getLogger(AdminDAO.class.getName());
 
     // Định nghĩa hằng số cho tên cột trong database
     private static final String COLUMN_ADMIN_ID = "AdminID";
@@ -20,15 +21,14 @@ public class AdminDAO {
     private static final String COLUMN_EMAIL = "Email";
     private static final String COLUMN_PASSWORD = "Password";
 
-    // Constructor để nhận Connection từ bên ngoài (cách tốt hơn để tránh hardcode)
     public AdminDAO(Connection connection) {
         this.connection = connection;
     }
 
-    /**
-     * 
-     * @return List<Admin>
-     */
+    public AdminDAO() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public List<Admin> getAllAdmins() {
         List<Admin> admins = new ArrayList<>();
         String sql = "SELECT * FROM Admin";
@@ -46,16 +46,11 @@ public class AdminDAO {
                 admins.add(admin);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error fetching all admins", ex);
         }
         return admins;
     }
 
-    /**
-     * Lấy thông tin Admin theo ID
-     * @param id ID của Admin
-     * @return Admin object hoặc null nếu không tìm thấy
-     */
     public Admin getAdminByID(int id) {
         String sql = "SELECT * FROM Admin WHERE " + COLUMN_ADMIN_ID + " = ?";
         
@@ -72,16 +67,11 @@ public class AdminDAO {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error fetching admin by ID", ex);
         }
         return null;
     }
 
-    /**
-     * Lấy thông tin Admin theo Email
-     * @param email Email của Admin
-     * @return Admin object hoặc null nếu không tìm thấy
-     */
     public Admin getAdminByEmail(String email) {
         String sql = "SELECT * FROM Admin WHERE " + COLUMN_EMAIL + " = ?";
         
@@ -98,16 +88,11 @@ public class AdminDAO {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error fetching admin by email", ex);
         }
         return null;
     }
 
-    /**
-     * Cập nhật thông tin Admin
-     * @param admin Đối tượng Admin đã chỉnh sửa
-     * @return true nếu cập nhật thành công, false nếu thất bại
-     */
     public boolean updateAdmin(Admin admin) {
         String sql = "UPDATE Admin SET " + COLUMN_NAME + " = ?, " + COLUMN_EMAIL + " = ?, " + COLUMN_PASSWORD + " = ? WHERE " + COLUMN_ADMIN_ID + " = ?";
         
@@ -118,16 +103,11 @@ public class AdminDAO {
             ps.setInt(4, admin.getId());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error updating admin", ex);
         }
         return false;
     }
 
-    /**
-     * Xóa Admin theo ID
-     * @param id ID của Admin cần xóa
-     * @return true nếu xóa thành công, false nếu thất bại
-     */
     public boolean deleteAdmin(int id) {
         String sql = "DELETE FROM Admin WHERE " + COLUMN_ADMIN_ID + " = ?";
         
@@ -135,29 +115,38 @@ public class AdminDAO {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error deleting admin", ex);
         }
         return false;
     }
 
-    // Kiểm tra hoạt động
     public static void main(String[] args) {
+        Connection conn = null;
         try {
-            // Kết nối với database (có thể truyền connection từ nơi khác vào)
             String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=MovieTicketBooking;TrustServerCertificate=true;";
-            String user = "your_username";  // Đổi lại tên đăng nhập
-            String pass = "your_password";  // Đổi lại mật khẩu
+            String user = "your_username";
+            String pass = "your_password";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            Connection conn = DriverManager.getConnection(url, user, pass);
+            conn = DriverManager.getConnection(url, user, pass);
             
-            // Tạo DAO và gọi thử phương thức
             AdminDAO dao = new AdminDAO(conn);
             System.out.println(dao.getAdminByID(1));
-
-            // Đóng kết nối sau khi sử dụng
-            conn.close();
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "JDBC Driver not found", e);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Database connection error: " + e.getMessage(), e);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Unexpected error", e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, "Failed to close connection", e);
+            }
         }
+    }
+
+    public Admin getAdminByName(String username) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
