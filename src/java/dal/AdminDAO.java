@@ -22,25 +22,27 @@ public class AdminDAO extends DBContext {
      * @return List of Admin objects
      */
     public List<Admin> getAllAdmins() {
-        List<Admin> admins = new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM Admin";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Admin admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
-                admins.add(admin);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+    List<Admin> admins = new ArrayList<>();
+    String sql = "SELECT * FROM Admin";
+    
+    try (PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Admin admin = new Admin(
+                    rs.getInt("AdminID"),
+                    rs.getString("Name"),
+                    rs.getString("Email"),
+                    rs.getString("Password")
+            );
+            admins.add(admin);
         }
-        return admins;
+    } catch (SQLException ex) {
+        Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
     }
+    return admins;
+}
+
 
     /**
      * Retrieves an admin by ID
