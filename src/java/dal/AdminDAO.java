@@ -11,60 +11,66 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Admin;
 
-/**
- * Data Access Object for Admin
- * Handles database operations related to Admin
- */
-public class AdminDAO extends DBContext {
+public class AdminDAO {
+    private Connection connection;
+
+    // Định nghĩa hằng số cho tên cột trong database
+    private static final String COLUMN_ADMIN_ID = "AdminID";
+    private static final String COLUMN_NAME = "Name";
+    private static final String COLUMN_EMAIL = "Email";
+    private static final String COLUMN_PASSWORD = "Password";
+
+    // Constructor để nhận Connection từ bên ngoài (cách tốt hơn để tránh hardcode)
+    public AdminDAO(Connection connection) {
+        this.connection = connection;
+    }
 
     /**
-     * Retrieves all admins from the database
-     * @return List of Admin objects
+     * 
+     * @return List<Admin>
      */
     public List<Admin> getAllAdmins() {
-    List<Admin> admins = new ArrayList<>();
-    String sql = "SELECT * FROM Admin";
-    
-    try (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        List<Admin> admins = new ArrayList<>();
+        String sql = "SELECT * FROM Admin";
 
-        while (rs.next()) {
-            Admin admin = new Admin(
-                    rs.getInt("AdminID"),
-                    rs.getString("Name"),
-                    rs.getString("Email"),
-                    rs.getString("Password")
-            );
-            admins.add(admin);
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Admin admin = new Admin(
+                        rs.getInt(COLUMN_ADMIN_ID),
+                        rs.getString(COLUMN_NAME),
+                        rs.getString(COLUMN_EMAIL),
+                        rs.getString(COLUMN_PASSWORD)
+                );
+                admins.add(admin);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } catch (SQLException ex) {
-        Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
+        return admins;
     }
-    return admins;
-}
-
 
     /**
-     * Retrieves an admin by ID
-     * @param id Admin ID
-     * @return Admin object
+     * Lấy thông tin Admin theo ID
+     * @param id ID của Admin
+     * @return Admin object hoặc null nếu không tìm thấy
      */
     public Admin getAdminByID(int id) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "SELECT * FROM Admin WHERE " + COLUMN_ADMIN_ID + " = ?";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Admin(
+                            rs.getInt(COLUMN_ADMIN_ID),
+                            rs.getString(COLUMN_NAME),
+                            rs.getString(COLUMN_EMAIL),
+                            rs.getString(COLUMN_PASSWORD)
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,26 +78,25 @@ public class AdminDAO extends DBContext {
     }
 
     /**
-     * Retrieves an admin by email
-     * @param email Admin email
-     * @return Admin object
+     * Lấy thông tin Admin theo Email
+     * @param email Email của Admin
+     * @return Admin object hoặc null nếu không tìm thấy
      */
     public Admin getAdminByEmail(String email) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Email=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "SELECT * FROM Admin WHERE " + COLUMN_EMAIL + " = ?";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Admin(
+                            rs.getInt(COLUMN_ADMIN_ID),
+                            rs.getString(COLUMN_NAME),
+                            rs.getString(COLUMN_EMAIL),
+                            rs.getString(COLUMN_PASSWORD)
+                    );
+                }
             }
-            return admin;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -99,74 +104,19 @@ public class AdminDAO extends DBContext {
     }
 
     /**
-     * Retrieves an admin by name
-     * @param name Admin name
-     * @return Admin object
-     */
-    public Admin getAdminByName(String name) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Name=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
-            }
-            return admin;
-        } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves an admin by password
-     * @param password Admin password
-     * @return Admin object
-     */
-    public Admin getAdminByPassword(String password) {
-        try {
-            Admin admin = null;
-            String sql = "SELECT * FROM Admin WHERE Password=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, password);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                admin = new Admin(
-                        rs.getInt("AdminID"),
-                        rs.getString("Name"),
-                        rs.getString("Email"),
-                        rs.getString("Password")
-                );
-            }
-            return admin;
-        } catch (SQLException ex) {
-            Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    /**
-     * Updates an admin in the database
-     * @param admin Admin object
-     * @return true if update was successful, false otherwise
+     * Cập nhật thông tin Admin
+     * @param admin Đối tượng Admin đã chỉnh sửa
+     * @return true nếu cập nhật thành công, false nếu thất bại
      */
     public boolean updateAdmin(Admin admin) {
-        try {
-            String sql = "UPDATE Admin SET Name=?, Email=?, Password=? WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "UPDATE Admin SET " + COLUMN_NAME + " = ?, " + COLUMN_EMAIL + " = ?, " + COLUMN_PASSWORD + " = ? WHERE " + COLUMN_ADMIN_ID + " = ?";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, admin.getName());
             ps.setString(2, admin.getEmail());
             ps.setString(3, admin.getPassword());
             ps.setInt(4, admin.getId());
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+            return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -174,26 +124,40 @@ public class AdminDAO extends DBContext {
     }
 
     /**
-     * Deletes an admin from the database
-     * @param id Admin ID
-     * @return true if deletion was successful, false otherwise
+     * Xóa Admin theo ID
+     * @param id ID của Admin cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
      */
     public boolean deleteAdmin(int id) {
-        try {
-            String sql = "DELETE FROM Admin WHERE AdminID=?";
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "DELETE FROM Admin WHERE " + COLUMN_ADMIN_ID + " = ?";
+        
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+            return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
+    // Kiểm tra hoạt động
     public static void main(String[] args) {
-        AdminDAO dao = new AdminDAO();
-        System.out.println(dao.getAdminByID(1));
+        try {
+            // Kết nối với database (có thể truyền connection từ nơi khác vào)
+            String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=MovieTicketBooking;TrustServerCertificate=true;";
+            String user = "your_username";  // Đổi lại tên đăng nhập
+            String pass = "your_password";  // Đổi lại mật khẩu
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Connection conn = DriverManager.getConnection(url, user, pass);
+            
+            // Tạo DAO và gọi thử phương thức
+            AdminDAO dao = new AdminDAO(conn);
+            System.out.println(dao.getAdminByID(1));
+
+            // Đóng kết nối sau khi sử dụng
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
-
