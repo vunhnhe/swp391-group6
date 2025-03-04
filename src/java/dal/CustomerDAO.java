@@ -38,8 +38,10 @@ public class CustomerDAO extends DBContext {
         } catch (SQLException ex) {
             Logger.getLogger(CustomerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
-    }
+        return new ArrayList<>();}
+
+
+    
 
     public Customer getCustomerByID(int id) {
         try {
